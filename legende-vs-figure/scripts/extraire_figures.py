@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """
 extraire_figures.py : extrait les images d'un .docx en pleine résolution,
-avec le début de la légende la plus proche (« Figure N. … »).
+avec la légende la plus proche (« Figure N. … »), écrite en entier dans un fichier .txt à côté de chaque image.
 
 Le .docx n'est jamais modifié (lecture seule).
 Chaque image est écrite dans le dossier de sortie sous un nom du type :
     fig_p046_image1.png      (p046 = numéro du paragraphe qui contient l'image)
+    fig_p046_image1.txt      (texte complet de sa légende)
 
 Usage :
     python extraire_figures.py manuscrit.docx dossier_images/
@@ -14,6 +15,11 @@ Usage :
 Prérequis : pip install python-docx
 """
 import argparse
+import sys as _sys
+try:  # consoles Windows : afficher flèches et accents sans UnicodeEncodeError
+    _sys.stdout.reconfigure(encoding="utf-8")
+except Exception:
+    pass
 import os
 import docx
 from docx.oxml.ns import qn
@@ -35,11 +41,15 @@ def extraire(chemin, sortie, fenetre=6):
             with open(fichier, "wb") as f:
                 f.write(part.blob)
             # légende : premier paragraphe « Figure … » dans la fenêtre qui suit l'image
-            legende = next((q.text[:90] for q in paras[i:i + fenetre]
-                            if q.text.strip().startswith(("Figure", "Fig.", "Table"))), "(légende non trouvée)")
+            legende = next((q.text for q in paras[i:i + fenetre]
+                            if q.text.strip().startswith(("Figure", "Fig.", "Table"))), None)
+            txt = os.path.splitext(fichier)[0] + ".txt"
+            with open(txt, "w", encoding="utf-8") as f:
+                f.write((legende or "(légende non trouvée)") + "\n")
             n += 1
-            print(f"{os.path.basename(fichier):35s} {len(part.blob)/1024:8.0f} Ko | {legende}")
-    print(f"\n{n} image(s) extraite(s) dans {sortie}")
+            vu = legende[:90] + ("…" if len(legende) > 90 else "") if legende else "(légende non trouvée)"
+            print(f"{os.path.basename(fichier):35s} {len(part.blob)/1024:8.0f} Ko | {vu}")
+    print(f"\n{n} image(s) extraite(s) dans {sortie}, chacune avec sa légende complète dans un .txt du même nom")
 
 
 if __name__ == "__main__":

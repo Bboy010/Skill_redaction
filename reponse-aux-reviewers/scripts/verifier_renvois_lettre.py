@@ -4,7 +4,8 @@ verifier_renvois_lettre.py : contrôle les numéros de ligne cités dans une let
 
 Le script repère dans la lettre toutes les mentions « line 123 », « lines 123–130 »
 et « lines 120–122, 190 and 384 », puis affiche le texte trouvé à ces lignes
-dans le manuscrit (fichier produit par pdf_lignes.py).
+dans le manuscrit (fichier produit par pdf_lignes.py). Toutes les lignes d'une plage sont affichées
+(10 lignes au plus ; pour une plage plus longue, sa première et sa dernière ligne).
 Il vérifie aussi que chaque phrase citée entre guillemets “…” dans la lettre
 existe à l'identique dans le manuscrit (si --manuscrit est fourni).
 
@@ -20,7 +21,14 @@ Usage :
 Prérequis : pip install python-docx
 """
 import argparse
+import sys as _sys
+try:  # consoles Windows : afficher flèches et accents sans UnicodeEncodeError
+    _sys.stdout.reconfigure(encoding="utf-8")
+except Exception:
+    pass
 import re
+
+MAX_LIGNES = 10  # une plage de 10 lignes au plus est affichée en entier ; au-delà, sa première et sa dernière ligne
 
 
 def lire_texte(chemin):
@@ -43,7 +51,7 @@ def lire_lignes(chemin):
 def plages(texte):
     """Retourne la liste des (début, fin, contexte) cités dans la lettre."""
     res = []
-    for m in re.finditer(r"\blines?\s+((?:\d+(?:\s*[–-]\s*\d+)?)(?:\s*(?:,|and|et)\s*\d+(?:\s*[–-]\s*\d+)?)*)", texte):
+    for m in re.finditer(r"\b(?:lines?|lignes?)\s+((?:\d+(?:\s*[–-]\s*\d+)?)(?:\s*(?:,|and|et)\s*\d+(?:\s*[–-]\s*\d+)?)*)", texte):
         ctx = texte[max(0, m.start() - 60):m.end() + 10].replace("\n", " ")
         for morceau in re.findall(r"\d+(?:\s*[–-]\s*\d+)?", m.group(1)):
             bornes = [int(x) for x in re.split(r"\s*[–-]\s*", morceau)]
@@ -69,7 +77,11 @@ if __name__ == "__main__":
             print(f"\n[ignoré] lignes {debut}-{fin} (ancienne version)")
             continue
         print(f"\n>>> lettre : …{ctx}…")
-        for n in (debut, fin) if debut != fin else (debut,):
+        etendue = list(range(debut, fin + 1)) if fin >= debut else [debut, fin]
+        if len(etendue) > MAX_LIGNES:
+            print(f"    ({len(etendue)} lignes : seules la première et la dernière sont affichées)")
+            etendue = [debut, fin]
+        for n in etendue:
             print(f"    ligne {n:>4} : {L.get(n, '!!! LIGNE INTROUVABLE')}")
 
     if a.manuscrit:

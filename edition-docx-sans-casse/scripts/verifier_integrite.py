@@ -18,9 +18,15 @@ Usage :
 Prérequis : pip install python-docx
 """
 import argparse
+import sys as _sys
+try:  # consoles Windows : afficher flèches et accents sans UnicodeEncodeError
+    _sys.stdout.reconfigure(encoding="utf-8")
+except Exception:
+    pass
 import collections
 import difflib
 import hashlib
+import json
 import re
 import docx
 from docx.oxml.ns import qn
@@ -29,6 +35,20 @@ from docx.oxml.ns import qn
 def md5(chemin):
     with open(chemin, "rb") as f:
         return hashlib.md5(f.read()).hexdigest()
+
+
+def citations_affichees(instructions):
+    """plainCitation de chaque champ de citation Zotero, lu avec json.loads (les espaces du JSON n'ont pas d'importance)."""
+    out = []
+    for t in instructions:
+        if "ZOTERO_ITEM" not in t or "{" not in t:
+            continue
+        try:
+            out.append(json.loads(t[t.index("{"): t.rindex("}") + 1]).get("properties", {}).get("plainCitation", ""))
+        except ValueError:
+            m = re.search(r'"plainCitation"\s*:\s*"([^"]*)"', t)
+            out.append(m.group(1) if m else "?")
+    return out
 
 
 def portraits(chemin, style_biblio):
@@ -44,7 +64,7 @@ def portraits(chemin, style_biblio):
                 instr.append("".join(cur)); cur = None
         elif el.tag == qn("w:instrText") and cur is not None:
             cur.append(el.text or "")
-    cits = [m.group(1) for t in instr for m in [re.search(r'"plainCitation":"([^"]*)"', t)] if m]
+    cits = citations_affichees(instr)
     debuts = sum(1 for e in d.element.body.iter(qn("w:fldChar")) if e.get(qn("w:fldCharType")) == "begin")
     images = [hashlib.md5(d.part.related_parts[b.get(qn("r:embed"))].blob).hexdigest()
               for b in d.element.body.iter(qn("a:blip")) if b.get(qn("r:embed")) in d.part.related_parts]
@@ -76,7 +96,8 @@ if __name__ == "__main__":
     A, B = portraits(a.avant, a.style_biblio), portraits(a.apres, a.style_biblio)
 
     print(f"Empreintes : {md5(a.avant)[:10]} → {md5(a.apres)[:10]}")
-    print(f"Champs : {A['champs']} → {B['champs']} | citations affichées identiques : {A['cits'] == B['cits']}")
+    print(f"Champs : {A['champs']} → {B['champs']} | citations affichées identiques : {A['cits'] == B['cits']} "
+          f"({len(A['cits'])} → {len(B['cits'])} citations comparées)")
     print(f"Images : {len(A['images'])} → {len(B['images'])} | identiques : {A['images'] == B['images']}")
     print(f"Entrées de bibliographie : {A['biblio']} → {B['biblio']}")
     sm = difflib.SequenceMatcher(a=A["paras"], b=B["paras"], autojunk=False)

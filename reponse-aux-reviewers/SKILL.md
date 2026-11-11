@@ -5,6 +5,10 @@ description: Analyser une décision éditoriale et rédiger la lettre de répons
 
 # Réponse aux reviewers
 
+## Pourquoi utiliser ce skill
+Rédigez une lettre de réponse que les reviewers vérifient en quelques secondes : chaque commentaire cité mot pour mot, chaque réponse liée à une modification réelle, à un numéro de ligne exact.
+Éprouvé sur un projet de recherche réel, mené à bien.
+
 ## Objectif
 Produire une lettre qui convainc l'éditeur parce qu'elle est **vérifiable**.
 Chaque commentaire est cité exactement. Chaque réponse renvoie à une modification réellement présente, à une ligne précise.
@@ -27,7 +31,7 @@ Chaque commentaire est cité exactement. Chaque réponse renvoie à une modifica
 4. **Faire les modifications d'abord, écrire ensuite.** La lettre décrit le manuscrit final, pas des intentions. Utilisez les skills edition-docx-sans-casse et verification-des-sources.
 5. **Rédiger chaque réponse** sur le modèle : remerciement bref, ce qui a été fait, où (section et lignes), citation exacte de la nouvelle phrase si elle est courte.
 6. **Reconnaître les erreurs simplement.** « We thank the reviewer and apologise for the oversight. » Ne vous justifiez pas longuement, ne contredisez pas sèchement.
-7. **Relever les numéros de ligne dans le PDF final**, après tout Refresh Zotero. Vérifiez chaque renvoi avec `scripts/verifier_renvois_lettre.py`.
+7. **Relever les numéros de ligne dans le PDF final**, après tout Refresh Zotero. Vérifiez chaque renvoi avec `scripts/verifier_renvois_lettre.py`. Quand un commentaire du reviewer cite des numéros de ligne de l'**ancienne** version (« the text at lines 300–304… »), ajoutez `--ignorer 300-304` : ces numéros ne seront pas contrôlés sur le nouveau PDF.
 8. **Ajouter un paragraphe « Additional corrections »** pour les changements faits sans demande d'un reviewer. N'y mettez que ce qui est réellement dans le manuscrit.
 
 ## Checklist de contrôle
@@ -60,5 +64,5 @@ Chaque commentaire est cité exactement. Chaque réponse renvoie à une modifica
 
 ## Scripts
 - `scripts/pdf_lignes.py` : reconstruit les lignes numérotées d'un PDF (numéros dans la marge droite ou gauche).
-- `scripts/verifier_renvois_lettre.py` : liste chaque « line(s) N–M » de la lettre et affiche le texte trouvé à ces lignes, pour contrôle humain.
+- `scripts/verifier_renvois_lettre.py` : liste chaque « line(s) N–M » de la lettre et affiche le texte trouvé à **chaque** ligne de la plage (10 lignes au plus ; au-delà, la première et la dernière), pour contrôle humain. Option `--ignorer` pour les numéros cités de l'ancienne version ; option `--manuscrit` pour vérifier les phrases citées.
 - `assets/modele_lettre.md` : squelette de lettre à copier.

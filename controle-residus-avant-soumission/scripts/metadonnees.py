@@ -19,6 +19,11 @@ Usage :
 Prérequis : pip install pymupdf (pour les PDF)
 """
 import argparse
+import sys as _sys
+try:  # consoles Windows : afficher flèches et accents sans UnicodeEncodeError
+    _sys.stdout.reconfigure(encoding="utf-8")
+except Exception:
+    pass
 import re
 import zipfile
 

@@ -24,6 +24,11 @@ Conseil : lancez-le sur une COPIE, jamais sur le fichier de l'auteur, et jamais 
 Prérequis : pip install python-docx
 """
 import argparse
+import sys as _sys
+try:  # consoles Windows : afficher flèches et accents sans UnicodeEncodeError
+    _sys.stdout.reconfigure(encoding="utf-8")
+except Exception:
+    pass
 import copy
 import json
 import sys

@@ -5,6 +5,10 @@ description: Modifier le texte d'un manuscrit Word (.docx) sans casser la mise e
 
 # Édition d'un .docx sans casse
 
+## Pourquoi utiliser ce skill
+Appliquez de nombreuses corrections à un manuscrit Word en quelques minutes, en gardant intacts italiques, gras, polices et champs Zotero, avec sauvegarde et contrôle après chaque modification.
+Éprouvé sur un projet de recherche réel, mené à bien.
+
 ## Objectif
 Appliquer des corrections **validées** dans un .docx, en gardant intacts : polices, italiques des noms latins, gras des renvois, champs Zotero, images.
 Chaque modification doit être traçable, reproductible et réversible.

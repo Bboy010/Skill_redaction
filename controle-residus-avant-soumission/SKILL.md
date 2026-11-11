@@ -5,6 +5,10 @@ description: Faire le dernier contrôle technique d'un manuscrit et de sa lettre
 
 # Contrôle des résidus avant soumission
 
+## Pourquoi utiliser ce skill
+Envoyez des fichiers propres : pas de commentaires, de modifications suivies, de texte masqué ni de nom d'auteur oublié, et la liste exacte des fichiers à joindre.
+Éprouvé sur un projet de recherche réel, mené à bien.
+
 ## Objectif
 Envoyer des fichiers **propres** : rien d'oublié du travail en cours, rien qui révèle des informations privées, et les **bons** fichiers.
 
@@ -20,7 +24,7 @@ Envoyer des fichiers **propres** : rien d'oublié du travail en cours, rien qui 
 ## Étapes
 1. **Contrôle technique du .docx** : `python scripts/residus_docx.py manuscrit.docx --lignes lignes.txt`. Il recherche :
    - modifications suivies non acceptées, commentaires, texte masqué, surlignage, trame de fond ;
-   - balises de travail (`[ZOTERO: …]`, `TODO`, `XX`, `???`, `à vérifier`) ;
+   - balises de travail (`[ZOTERO: …]`, `TODO`, `XX`, `???`) et notes écrites `[à vérifier]`, `(à vérifier)` ou `À VÉRIFIER` (les mêmes mots dans une phrase normale ne sont pas signalés) ;
    - champs incomplets ou affichant « Error! », signets ;
    - doubles espaces, espace avant une ponctuation fermante, ponctuation doublée, parenthèses non appariées ;
    - polices effectives différentes de la police attendue ;
@@ -67,5 +71,5 @@ Un tableau (fichier, ligne, résidu, gravité **bloquant / à corriger / cosmét
 **Fichiers à joindre :** manuscrit.docx (date), manuscrit.pdf (date), manuscrit_suivi.docx (date), lettre.pdf (date). **Ne pas envoyer :** manuscrit_v1.docx (obsolète).
 
 ## Scripts
-- `scripts/residus_docx.py` : contrôle technique complet du .docx (lecture seule).
+- `scripts/residus_docx.py` : contrôle technique complet du .docx (lecture seule). Avec `--lignes`, chaque point reçoit sa ligne du PDF, marquée « (approx.) » quand elle n'a pu être trouvée qu'à partir d'un extrait court.
 - `scripts/metadonnees.py` : métadonnées des .docx et .pdf, chemins locaux, noms de compte.

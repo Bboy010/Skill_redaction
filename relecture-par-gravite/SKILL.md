@@ -5,6 +5,10 @@ description: Relire intégralement un manuscrit, section par section et phrase p
 
 # Relecture classée par gravité
 
+## Pourquoi utiliser ce skill
+Obtenez un rapport complet et hiérarchisé de ce qu'il faut corriger d'abord (bloquant, important, cosmétique), avec la ligne, la correction et la raison, en gardant la main sur ce qui est appliqué.
+Éprouvé sur un projet de recherche réel, mené à bien.
+
 ## Objectif
 Donner à l'auteur une vue complète et hiérarchisée des problèmes, pour qu'il **décide** de ce qui est corrigé.
 On ne modifie rien pendant la relecture.
@@ -76,4 +80,4 @@ Bilan : X bloquants · Y importants · Z cosmétiques.
 
 ## Scripts
 - `scripts/pdf_lignes.py` : lignes numérotées du PDF.
-- `scripts/controles_langue.py` : contrôles automatiques configurables (orthographe, typographie, mots interdits).
+- `scripts/controles_langue.py` : contrôles automatiques configurables (orthographe, typographie, mots interdits), chacun avec sa ligne du PDF (« (approx.) » si elle n'a été trouvée qu'à partir d'un extrait court : à vérifier).

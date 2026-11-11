@@ -5,6 +5,10 @@ description: Vérifier que les nouvelles modifications d'un manuscrit ne contred
 
 # Contrôle de non-régression
 
+## Pourquoi utiliser ce skill
+Assurez-vous qu'une correction n'annule pas une promesse faite à un reviewer, ne contredit pas une figure et n'affaiblit pas votre article.
+Éprouvé sur un projet de recherche réel, mené à bien.
+
 ## Objectif
 S'assurer que chaque modification **améliore** l'article sans casser ce qui avait été promis ou corrigé aux tours précédents.
 
@@ -22,7 +26,7 @@ S'assurer que chaque modification **améliore** l'article sans casser ce qui ava
 
 ## Étapes
 1. **Lister les modifications** entre la version soumise et la version actuelle (skill comparaison-versions-et-suivi). Regroupez-les en modifications logiques : une phrase réécrite = une modification.
-2. **Si l'auteur a renvoyé sa version**, classez vos propositions avec `scripts/statut_modifications.py` : gardée, refusée, autre (réécrite par l'auteur). Isolez aussi ce que l'auteur a ajouté lui-même.
+2. **Si l'auteur a renvoyé sa version**, classez vos propositions avec `scripts/statut_modifications.py --reference version_soumise.docx` : gardée, refusée, autre (réécrite par l'auteur), ambiguë (nouveau texte court ou banal, à relire). Isolez aussi ce que l'auteur a ajouté lui-même, y compris dans un paragraphe qui contient une de vos propositions.
 3. **Pour chaque modification, poser 4 questions :**
    1. **Accord avec les reviewers.** Contredit-elle une demande passée ? Annule-t-elle une correction déjà faite ? Affaiblit-elle une précaution promise (cadrage descriptif, « putative », absence de tests statistiques) ?
    2. **Accord avec la lettre.** La lettre précédente citait-elle une phrase ou un titre de section que la modification change ?
@@ -64,4 +68,4 @@ Un rapport `NON_REGRESSION.md` :
 | 58 | « color » → « colour » | OK | Orthographe britannique demandée |
 
 ## Script
-`scripts/statut_modifications.py` : à partir d'une liste de propositions (ancien → nouveau, en JSON), indique pour chacune si elle est **gardée**, **refusée** ou **autre** dans le fichier de l'auteur.
+`scripts/statut_modifications.py` : à partir d'une liste de propositions (ancien → nouveau, en JSON), indique pour chacune si elle est **gardée**, **refusée**, **autre** ou **ambiguë** dans le fichier de l'auteur. Un nouveau texte court, vide ou déjà présent est cherché dans son contexte (option `--reference`). Avec `--reference`, il liste aussi les autres changements de l'auteur, même dans un paragraphe lié à une proposition.

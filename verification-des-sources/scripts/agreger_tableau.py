@@ -3,7 +3,7 @@
 agreger_tableau.py : recalcule un chiffre (somme, moyenne, compte, médiane) à partir d'un tableau brut.
 
 But : remplacer « je reprends le chiffre de l'ancienne version » par « je le recalcule ».
-La commande utilisée est affichée, pour pouvoir la recopier dans vos notes.
+La commande utilisée est affichée avec ses guillemets, pour pouvoir la recopier dans vos notes.
 
 Formats lus : .tsv, .csv, .txt (tabulations), .xlsx (première feuille).
 Si le fichier n'a pas d'en-tête, utilisez --colonnes pour nommer les colonnes.
@@ -31,11 +31,24 @@ Filtres (--filtre, répétable) :
   col~regex    correspond à l'expression régulière
 """
 import argparse
+import sys as _sys
+try:  # consoles Windows : afficher flèches et accents sans UnicodeEncodeError
+    _sys.stdout.reconfigure(encoding="utf-8")
+except Exception:
+    pass
 import csv
+import os
 import re
+import shlex
 import statistics
+import subprocess
 import sys
 from collections import defaultdict
+
+
+def commande_affichee(argv):
+    """Commande telle que tapée, avec ses guillemets, pour pouvoir la recopier telle quelle."""
+    return subprocess.list2cmdline(argv) if os.name == "nt" else shlex.join(argv)
 
 
 def lire(chemin, colonnes=None):
@@ -117,7 +130,7 @@ if __name__ == "__main__":
             g = "(tout)"
         groupes[g].append(r)
 
-    print("Commande :", " ".join(sys.argv))
+    print("Commande :", commande_affichee(sys.argv))
     print(f"Lignes retenues après filtres : {len(rows)}")
     for g, rs in sorted(groupes.items()):
         if a.operation == "count":

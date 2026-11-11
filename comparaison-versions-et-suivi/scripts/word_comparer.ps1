@@ -14,6 +14,10 @@ Usage (PowerShell) :
 Options :
   -Auteur  "Authors"   nom affiché pour les révisions (évite d'afficher le nom du compte Windows)
   -SansPdf             ne pas produire le PDF
+  -NettoyerMetadonnees vider les propriétés du document suivi avant de l'enregistrer
+                       (auteur, dernier modificateur…) : sinon Word y écrit le nom du compte Windows.
+                       Word affiche alors aussi les révisions sous son nom d'auteur générique (« Auteur »),
+                       au lieu de -Auteur. Vérifier le résultat avec metadonnees.py (skill controle-residus-avant-soumission).
 #>
 param(
     [Parameter(Mandatory = $true)][string]$Reference,
@@ -21,7 +25,8 @@ param(
     [string]$Pdf,
     [Parameter(Mandatory = $true)][string]$Suivi,
     [string]$Auteur = "Authors",
-    [switch]$SansPdf
+    [switch]$SansPdf,
+    [switch]$NettoyerMetadonnees
 )
 
 $Reference = (Resolve-Path $Reference).Path
@@ -43,7 +48,11 @@ try {
     $r = $word.Documents.Open($Finale, $false, $true)
     # CompareDocuments(Original, Revised, Destination=2 (nouveau document), Granularité=1 (mot), ... , Auteur)
     $cmp = $word.CompareDocuments($o, $r, 2, 1, $true, $true, $true, $true, $true, $true, $true, $true, $true, $true, $Auteur)
+    if ($NettoyerMetadonnees) {
+        $cmp.RemoveDocumentInformation(8)                      # 8 = wdRDIDocumentProperties
+    }
     $cmp.SaveAs2($Suivi, 16)                                   # 16 = .docx
+    if ($NettoyerMetadonnees) { Write-Output "Propriétés du document suivi : supprimées" }
     Write-Output ("Document suivi : " + $Suivi + " (" + $cmp.Revisions.Count + " révisions)")
     $cmp.Close($false); $o.Close($false); $r.Close($false)
 }

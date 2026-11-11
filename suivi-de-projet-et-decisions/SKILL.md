@@ -5,6 +5,10 @@ description: Tenir, pendant toute une révision d'article, un journal de session
 
 # Suivi de projet et décisions
 
+## Pourquoi utiliser ce skill
+Reprenez exactement là où vous vous êtes arrêté : décisions, refus et sauvegardes notés, rien n'est rediscuté ni perdu.
+Éprouvé sur un projet de recherche réel, mené à bien.
+
 ## Objectif
 Garder une **mémoire fiable** de la révision : ce qui est décidé, refusé, fait, et ce qui reste à faire.
 On évite ainsi de refaire un débat déjà tranché, de reproposer une correction refusée, ou de travailler sur le mauvais fichier.

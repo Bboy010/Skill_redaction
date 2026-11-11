@@ -17,10 +17,16 @@ Usage :
   python controles_langue.py manuscrit.docx
   python controles_langue.py manuscrit.docx --lignes lignes.txt --interdits soil significant --politique-ize garder
 
---lignes : fichier produit par pdf_lignes.py, pour afficher le numéro de ligne de chaque point.
+--lignes : fichier produit par pdf_lignes.py, pour afficher le numéro de ligne de chaque point
+           (« (approx.) » quand la ligne n'a pu être trouvée qu'à partir d'un extrait court).
 Prérequis : pip install python-docx
 """
 import argparse
+import sys as _sys
+try:  # consoles Windows : afficher flèches et accents sans UnicodeEncodeError
+    _sys.stdout.reconfigure(encoding="utf-8")
+except Exception:
+    pass
 import re
 import docx
 
@@ -39,24 +45,66 @@ ISE_LEGITIMES = {"analyse", "analysed", "analyses", "hydrolyse", "hydrolysed", "
                  "compromise", "franchise", "merchandise", "disguise", "televise", "improvise", "excise", "incise"}
 
 
+# ---------- lignes du PDF (mêmes fonctions dans audit_zotero.py et residus_docx.py)
 def charger_lignes(chemin):
-    L = {}
+    """Lignes numérotées du PDF (fichier produit par pdf_lignes.py), dans l'ordre : [(numéro, texte)]."""
+    L = []
     if chemin:
         for l in open(chemin, encoding="utf-8"):
             m = re.match(r"\s*(\d+) \| (.*)", l)
             if m:
-                L[int(m.group(1))] = m.group(2).replace("_", "")
+                L.append((int(m.group(1)), m.group(2).replace("_", "")))
     return L
 
 
-def ligne_de(L, extrait):
-    s = extrait.strip()[:25]
-    for longueur in (25, 14):
-        s2 = s[:longueur]
-        for k in sorted(L):
-            if s2 and s2 in L[k]:
-                return k
+def index_lignes(L):
+    """Toutes les lignes mises bout à bout (espaces normalisés), avec le numéro de ligne de chaque caractère.
+    Un saut de ligne compte pour un espace, sauf après un trait d'union (mot coupé en fin de ligne)."""
+    morceaux, proprio = [], []
+    for n, t in L:
+        t = re.sub(r"\s+", " ", t).strip()
+        if morceaux and not morceaux[-1].endswith("-"):
+            morceaux.append(" "); proprio.append(n)
+        morceaux.append(t); proprio.extend([n] * len(t))
+    return "".join(morceaux), proprio
+
+
+def tasser(s):
+    """Réduit chaque suite d'espaces à un espace ; garde la position d'origine de chaque caractère."""
+    out, ou = [], []
+    for i, c in enumerate(s):
+        if c.isspace():
+            if out and out[-1] == " ":
+                continue
+            c = " "
+        out.append(c); ou.append(i)
+    return "".join(out), ou
+
+
+def ligne_de(index, para, pos):
+    """Ligne du PDF où tombe le caractère `pos` du texte de paragraphe `para`.
+    On cherche le plus long extrait autour de `pos` dans les lignes mises bout à bout ; le résultat porte
+    « (approx.) » si seul un extrait court (moins de 25 caractères) correspond, ou si l'extrait est trouvé plusieurs fois."""
+    texte, proprio = index
+    if not texte or not para:
+        return "?"
+    tas, ou = tasser(para)
+    k = next((j for j, w in enumerate(ou) if w >= pos), len(tas) - 1)
+    for demi in (60, 40, 25, 12):
+        a, b = max(0, k - demi), min(len(tas), k + demi)
+        morceau = tas[a:b]
+        extrait = morceau.strip()
+        if len(extrait) < 8:
+            continue
+        tete = len(morceau) - len(morceau.lstrip())
+        trouves = [m.start() for m in re.finditer(re.escape(extrait), texte)]
+        if trouves:
+            at = min(max(trouves[0] + (k - a - tete), 0), len(proprio) - 1)
+            exact = len(trouves) == 1 and len(extrait) >= 25
+            return proprio[at] if exact else f"{proprio[at]} (approx.)"
     return "?"
+
+
 
 
 if __name__ == "__main__":
@@ -70,7 +118,7 @@ if __name__ == "__main__":
     ap.add_argument("--pas-us-uk", action="store_true", help="désactiver le contrôle US/UK (revue en anglais américain)")
     a = ap.parse_args()
 
-    L = charger_lignes(a.lignes)
+    index = index_lignes(charger_lignes(a.lignes))
     d = docx.Document(a.docx)
     regles = {
         "tiret cadratin": r"—",
@@ -108,6 +156,6 @@ if __name__ == "__main__":
         for nom, i, j in trouves:
             total += 1
             ctx = t[max(0, i - 35):j + 25]
-            print(f"L{ligne_de(L, t[max(0, i - 20):i + 5])!s:>5} | {nom:35s} | …{ctx}…")
+            print(f"L{ligne_de(index, t, i)!s:>5} | {nom:35s} | …{ctx}…")
     print(f"\n{total} point(s) à regarder. Vérifiez chacun : certains sont légitimes "
           "(noms propres, titres, mots en contexte).")

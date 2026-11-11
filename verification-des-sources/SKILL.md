@@ -5,6 +5,10 @@ description: Recalculer chaque chiffre et vérifier chaque affirmation d'un manu
 
 # Vérification des sources
 
+## Pourquoi utiliser ce skill
+Sachez que chaque chiffre de votre article peut être refait à partir des données brutes, et lesquels ne le peuvent pas, avant qu'un reviewer ne pose la question.
+Éprouvé sur un projet de recherche réel, mené à bien.
+
 ## Objectif
 Chaque chiffre du manuscrit doit pouvoir être **refait** à partir d'un fichier de données, avec une règle qu'on sait énoncer.
 Si on ne peut pas le refaire, on le dit. On n'invente pas de définition pour qu'un chiffre « tombe juste ».
@@ -63,4 +67,4 @@ Un tableau :
 - Proposition : « Genomes recovered from water samples carried on average more esterase genes per genome (4.2, n = 30) than those from sediment samples (3.1, n = 8). »
 
 ## Script
-`scripts/agreger_tableau.py` : somme, moyenne, compte ou médiane d'une colonne, par groupe, avec filtres. Lit TSV, CSV et XLSX. Format « long » (une ligne par élément × catégorie) : options `--pivot-cle` et `--pivot-valeur`.
+`scripts/agreger_tableau.py` : somme, moyenne, compte ou médiane d'une colonne, par groupe, avec filtres. Affiche la commande exacte, avec ses guillemets, prête à recopier dans vos notes. Lit TSV, CSV et XLSX. Format « long » (une ligne par élément × catégorie) : options `--pivot-cle` et `--pivot-valeur`.

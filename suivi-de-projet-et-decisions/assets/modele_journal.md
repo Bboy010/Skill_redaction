@@ -10,7 +10,7 @@
 - Versions obsolètes (ne pas envoyer) : `[…]`
 
 ## ÉCHÉANCE
-- Date limite de la revue : [AAAA-MM-JJ].
+- Date limite de la revue : [AAAA-MM-JJ] ou « non indiquée : demander au secrétariat de rédaction ».
 
 ## DÉCISIONS VERROUILLÉES (ne pas rediscuter sans l'auteur)
 - Orthographe : [britannique Oxford / américaine].

@@ -5,6 +5,10 @@ description: Contrôler les citations numérotées d'un manuscrit Word géré av
 
 # Contrôle des citations Zotero
 
+## Pourquoi utiliser ce skill
+Soumettez avec le bon numéro de référence sur chaque citation : références fausses, manquantes, orphelines ou dans le mauvais ordre repérées et corrigées.
+Éprouvé sur un projet de recherche réel, mené à bien.
+
 ## Objectif
 Garantir que chaque appel [n] du texte renvoie au **bon** article de la bibliographie, et que la numérotation suit l'ordre de première citation, sans trou ni orpheline.
 
@@ -20,7 +24,7 @@ Garantir que chaque appel [n] du texte renvoie au **bon** article de la bibliogr
 - `pip install python-docx`
 
 ## Étapes
-1. **Fermer le document dans Word**, puis lancer `python scripts/audit_zotero.py manuscrit.docx`. Le script ne modifie rien.
+1. **Fermer le document dans Word**, puis lancer `python scripts/audit_zotero.py manuscrit.docx --lignes lignes.txt` (lignes du PDF, produites par `pdf_lignes.py`, fourni avec les skills reponse-aux-reviewers et relecture-par-gravite ; sans lui, omettez `--lignes`). Le script ne modifie rien.
 2. **Lire le rapport :**
    - *numéros tapés à la main* : un « [14] » écrit au clavier n'est pas un champ Zotero et ne sera jamais renuméroté ;
    - *affiché ≠ enregistré* : le texte visible ne correspond plus aux données du champ ;
@@ -71,4 +75,4 @@ Ordre croissant : oui | Problèmes : 2
 Action : deuxième Refresh, puis nouvel audit. Résultat : 0 problème, 0 orpheline.
 
 ## Script
-`scripts/audit_zotero.py` : audit complet en lecture seule. Option `--json` pour garder une trace.
+`scripts/audit_zotero.py` : audit complet en lecture seule. Chaque problème est donné avec 40 caractères de texte autour de la citation ; l'option `--lignes` ajoute son numéro de ligne du PDF ; l'option `--json` garde une trace.

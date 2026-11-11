@@ -5,6 +5,10 @@ description: Comparer deux versions d'un manuscrit Word (texte, mise en forme, c
 
 # Comparaison de versions et document avec suivi
 
+## Pourquoi utiliser ce skill
+Sachez toujours quel fichier a vraiment été soumis, et remettez à la revue un document avec suivi des modifications qui ne montre que les vrais changements.
+Éprouvé sur un projet de recherche réel, mené à bien.
+
 ## Objectif
 1. Savoir **quel fichier a vraiment été soumis**, et ce qui le distingue des autres versions.
 2. Produire un document avec suivi des modifications qui montre **uniquement** les vrais changements depuis cette version.
@@ -30,7 +34,7 @@ description: Comparer deux versions d'un manuscrit Word (texte, mise en forme, c
    - les marges et la numérotation des lignes.
 3. **Expliquer chaque différence.** Pour chacune : voulue ou non ? qui l'a faite ? Classez-les en *gardées / refusées / ajoutées par l'auteur*.
 4. **Choisir la base.** Si le fichier soumis contient des améliorations absentes de votre version de travail, refaites vos corrections **sur le fichier soumis**, plutôt que l'inverse.
-5. **Produire le PDF et le document suivi** : `scripts/word_comparer.ps1` (Word en lecture seule). La comparaison se fait toujours contre le fichier **réellement soumis**.
+5. **Produire le PDF et le document suivi** : `scripts/word_comparer.ps1` (Word en lecture seule), avec `-NettoyerMetadonnees` : sinon Word écrit le nom du compte Windows dans les propriétés du document suivi. La comparaison se fait toujours contre le fichier **réellement soumis**.
 6. **Vérifier que le fichier de l'auteur n'a pas bougé** : même empreinte avant et après. Le script l'affiche.
 7. **Relire le document suivi.** Repérez les révisions de « mise en forme » inattendues, par exemple une langue de vérification ajoutée par Word.
 
@@ -41,7 +45,7 @@ description: Comparer deux versions d'un manuscrit Word (texte, mise en forme, c
 - [ ] L'empreinte du fichier de l'auteur est inchangée.
 - [ ] Le PDF est plus récent que le .docx dont il provient.
 - [ ] Les révisions de mise en forme inattendues sont expliquées.
-- [ ] Les métadonnées du document suivi sont propres (voir le skill controle-residus-avant-soumission).
+- [ ] Les métadonnées du document suivi sont propres : produit avec `-NettoyerMetadonnees`, puis vérifié avec `metadonnees.py` (skill controle-residus-avant-soumission).
 
 ## Pièges fréquents (leçons apprises)
 - **Toujours identifier le fichier réellement soumis avant de comparer.** Le fichier pris pour base datait de deux jours avant la soumission. La vraie version contenait du gras, des polices harmonisées et une image remplacée. Sans comparaison, la révision les aurait annulés sans le dire.
@@ -67,4 +71,4 @@ Conclusion : la version de travail est périmée. On refait les corrections sur 
 
 ## Scripts
 - `scripts/comparer_docx.py` : comparaison détaillée en lecture seule (texte, forme, champs, images).
-- `scripts/word_comparer.ps1` : export PDF et document avec suivi, par Word, en lecture seule, avec contrôle d'empreinte.
+- `scripts/word_comparer.ps1` : export PDF et document avec suivi, par Word, en lecture seule, avec contrôle d'empreinte. Option `-NettoyerMetadonnees` : vide les propriétés du document suivi (Word affiche alors les révisions sous son nom d'auteur générique).
